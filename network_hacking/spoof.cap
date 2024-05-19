@@ -1,7 +1,7 @@
 net.probe on
 
 set arp.spoof.fullduplex true
-set arp.spoof.targets <target-ip>
+set arp.spoof.targets <target-ip-1>, <target-ip-2>, ...
 
 arp.spoof on
 

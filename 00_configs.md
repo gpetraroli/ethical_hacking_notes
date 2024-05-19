@@ -33,5 +33,5 @@ When running ```make``` you may get an error that looks like this:<br>
 > This may indicates that the build directory for your kernel modules does not exist. This is typically because the necessary kernel headers and development files are not installed on your system.<br>
 > To resolve install the kernel headers for your current kernel version. You can do this using the following command:
 > ```
-> $ sudo apt install linux-headers-$(uname -r)
+> sudo apt install linux-headers-$(uname -r)
 > ```

